@@ -300,7 +300,7 @@ export default function ProductDetailClient({
               {/* Atelier Visit Location Notice */}
               <div className="pt-2 flex items-center justify-center gap-1.5 text-xs text-[#6A7066]">
                 <MapPin className="w-3.5 h-3.5 text-[#C6A66B]" />
-                <span>Available for inspection at Bidhya Mandir, Birgunj</span>
+                <span>Available for inspection at Birta Mai Mandir, Birgunj</span>
               </div>
             </div>
           </div>

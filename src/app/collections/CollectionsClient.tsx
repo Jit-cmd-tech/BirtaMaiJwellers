@@ -208,7 +208,7 @@ export default function CollectionsClient({ initialProducts }: CollectionsClient
       };
     }
     return {
-      tag: "Bidhya Mandir, Birgunj",
+      tag: "Birta Mai Mandir, Birgunj",
       title: "The Precious Collections",
       description:
         "Browse our curated 24K and 22K gold, certified diamonds, and sterling silver artifacts. Enquire directly on WhatsApp for real-time bullion pricing and bespoke tailoring.",

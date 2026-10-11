@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href={getGeneralWhatsAppUrl(
-                  "Hello Birta Mai Jewellers, I would like to book a private consultation at Bidhya Mandir, Birgunj."
+                  "Hello Birta Mai Jewellers, I would like to book a private consultation at Birta Mai Mandir, Birgunj."
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -57,7 +57,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-xs text-[#F8F5EE]/75 leading-relaxed">
-              Curators of fine gold, certified diamonds, and sterling silver artifacts in Bidhya Mandir, Birgunj. Handcrafted to celebrate life&apos;s most meaningful moments.
+              Curators of fine gold, certified diamonds, and sterling silver artifacts in Birta Mai Mandir, Birgunj. Handcrafted to celebrate life&apos;s most meaningful moments.
             </p>
             <div className="flex items-center gap-2 text-xs text-[#C6A66B]">
               <ShieldCheck className="w-4 h-4" />
@@ -151,7 +151,7 @@ export default function Footer() {
             <div className="space-y-3 text-xs text-[#F8F5EE]/75">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#C6A66B] shrink-0 mt-0.5" />
-                <span>Bidhya Mandir, Birgunj, Nepal</span>
+                <span>Birta Mai Mandir, Birgunj, Nepal</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#C6A66B] shrink-0" />
@@ -180,7 +180,7 @@ export default function Footer() {
         {/* Bottom Sub-footer */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#F8F5EE]/60">
           <div>
-            © {currentYear} Birta Mai Jewellers. All rights reserved. Bidhya Mandir, Birgunj, Nepal.
+            © {currentYear} Birta Mai Jewellers. All rights reserved. Birta Mai Mandir, Birgunj, Nepal.
           </div>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-[#C6A66B] transition-colors">

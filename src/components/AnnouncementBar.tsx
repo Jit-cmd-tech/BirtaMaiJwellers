@@ -7,7 +7,7 @@ interface AnnouncementBarProps {
 }
 
 export default function AnnouncementBar({
-  announcementText = "Festive & Bridal Showcase • Visit our Atelier at Bidhya Mandir, Birgunj or Enquire via WhatsApp",
+  announcementText = "Festive & Bridal Showcase • Visit our Atelier at Birta Mai Mandir, Birgunj or Enquire via WhatsApp",
   active = true,
 }: AnnouncementBarProps) {
   if (!active) return null;
@@ -31,7 +31,7 @@ export default function AnnouncementBar({
             className="hover:text-[#C6A66B] transition-colors flex items-center gap-1 font-medium"
           >
             <PhoneCall className="w-3 h-3 text-[#C6A66B]" />
-            Bidhya Mandir, Birgunj
+            Birta Mai Mandir, Birgunj
           </Link>
         </div>
       </div>

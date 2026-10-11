@@ -13,7 +13,7 @@ export default function FloatingWhatsApp() {
   }
 
   const defaultMessage =
-    "Hello Birta Mai Jewellers, I would like to enquire about your jewelry collection and pricing at Bidhya Mandir, Birgunj.";
+    "Hello Birta Mai Jewellers, I would like to enquire about your jewelry collection and pricing at Birta Mai Mandir, Birgunj.";
   const href = getGeneralWhatsAppUrl(defaultMessage);
 
   return (

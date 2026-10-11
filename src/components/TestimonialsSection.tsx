@@ -13,7 +13,7 @@ export default function TestimonialsSection() {
             Birta Mai Jewellers Atelier
           </span>
           <span className="text-xs text-[#6A7066] block mt-1">
-            Bidhya Mandir, Birgunj, Nepal
+            Birta Mai Mandir, Birgunj, Nepal
           </span>
         </div>
       </div>

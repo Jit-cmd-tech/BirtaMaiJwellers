@@ -8,7 +8,7 @@ interface BrandStoryProps {
 
 export default function BrandStory({ customStory }: BrandStoryProps) {
   const defaultStory =
-    "At Birta Mai Jewellers, located at Bidhya Mandir in Birgunj, Nepal, we believe jewelry is far more than adornment—it is a sacred vessel of blessings, love, and memories passed down through generations. Whether you are welcoming a bride into your home, celebrating a festive milestone, or selecting an everyday talisman, our artisans craft each gold, diamond, and silver creation with unmatched reverence, transparent bullion purity, and attentive personal service.";
+    "At Birta Mai Jewellers, located at Birta Mai Mandir in Birgunj, Nepal, we believe jewelry is far more than adornment—it is a sacred vessel of blessings, love, and memories passed down through generations. Whether you are welcoming a bride into your home, celebrating a festive milestone, or selecting an everyday talisman, our artisans craft each gold, diamond, and silver creation with unmatched reverence, transparent bullion purity, and attentive personal service.";
 
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#F8F5EE] overflow-hidden">
@@ -58,7 +58,7 @@ export default function BrandStory({ customStory }: BrandStoryProps) {
             <div className="grid grid-cols-2 gap-6 pt-4 border-t border-[#E4DBD0]">
               <div>
                 <span className="font-serif text-2xl sm:text-3xl font-bold text-[#123B32] block">
-                  Bidhya Mandir
+                  Birta Mai Mandir
                 </span>
                 <span className="text-xs text-[#6A7066] uppercase tracking-wider">
                   Birgunj Flagship Location

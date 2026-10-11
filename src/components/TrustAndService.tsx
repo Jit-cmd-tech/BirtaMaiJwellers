@@ -24,7 +24,7 @@ export default function TrustAndService() {
       icon: Shield,
       title: "In-Store Assurance",
       description:
-        "Visit our atelier at Bidhya Mandir, Birgunj to inspect every piece in person with certified testing equipment.",
+        "Visit our atelier at Birta Mai Mandir, Birgunj to inspect every piece in person with certified testing equipment.",
     },
   ];
 

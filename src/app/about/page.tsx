@@ -15,7 +15,7 @@ import { getGeneralWhatsAppUrl, DISPLAY_PHONE_NUMBER } from "@/lib/whatsapp";
 export const metadata = {
   title: "About Us | Birta Mai Jewellers, Birgunj, Nepal",
   description:
-    "Learn about Birta Mai Jewellers, located at Bidhya Mandir, Birgunj. Discover our devotion to transparent bullion pricing, bespoke bridal artistry, and personalized heirloom service.",
+    "Learn about Birta Mai Jewellers, located at Birta Mai Mandir, Birgunj. Discover our devotion to transparent bullion pricing, bespoke bridal artistry, and personalized heirloom service.",
 };
 
 export default async function AboutPage() {
@@ -37,7 +37,7 @@ export default async function AboutPage() {
           </h1>
           <div className="w-16 h-0.5 bg-[#C6A66B] mx-auto mt-4" />
           <p className="text-base text-[#6A7066] mt-4 leading-relaxed">
-            Welcome to Birta Mai Jewellers, an authentic jewelry sanctuary nestled in Bidhya Mandir, Birgunj, Nepal.
+            Welcome to Birta Mai Jewellers, an authentic jewelry sanctuary nestled in Birta Mai Mandir, Birgunj, Nepal.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default async function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20 bg-[#FFFFFF] p-8 sm:p-14 rounded-sm border border-[#E4DBD0] shadow-sm">
           <div className="lg:col-span-6 space-y-6">
             <span className="text-[#C6A66B] text-xs uppercase tracking-[0.2em] font-semibold block">
-              Flagship at Bidhya Mandir
+              Flagship at Birta Mai Mandir
             </span>
             <h2 className="font-serif text-2xl sm:text-4xl text-[#252823] font-normal leading-snug">
               Jewelry Handcrafted for Your Sacred Milestones
@@ -62,7 +62,7 @@ export default async function AboutPage() {
             <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-[#252823]">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#C6A66B]" />
-                <span className="font-medium">Bidhya Mandir, Birgunj</span>
+                <span className="font-medium">Birta Mai Mandir, Birgunj</span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#C6A66B]" />
@@ -153,7 +153,7 @@ export default async function AboutPage() {
               Experience the Craftsmanship in Person
             </h2>
             <p className="text-xs text-[#F8F5EE]/85 leading-relaxed">
-              Our showroom is conveniently situated at Bidhya Mandir, Birgunj. We welcome walk-in visitors and scheduled appointments Sunday through Friday.
+              Our showroom is conveniently situated at Birta Mai Mandir, Birgunj. We welcome walk-in visitors and scheduled appointments Sunday through Friday.
             </p>
           </div>
 

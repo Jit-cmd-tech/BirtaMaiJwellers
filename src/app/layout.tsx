@@ -23,12 +23,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://birtamaijewellers.com"),
   title: "Birta Mai Jewellers | Luxury Gold, Diamond & Silver Jewelry in Birgunj, Nepal",
   description:
-    "Birta Mai Jewellers offers heirloom 24K and 22K gold jewelry, certified bridal sets, diamond rings, and handcrafted silver artifacts located at Bidhya Mandir, Birgunj, Nepal.",
+    "Birta Mai Jewellers offers heirloom 24K and 22K gold jewelry, certified bridal sets, diamond rings, and handcrafted silver artifacts located at Birta Mai Mandir, Birgunj, Nepal.",
   keywords: [
     "Birta Mai Jewellers",
     "Birgunj Jewelry Store",
     "Gold jewelry Birgunj",
-    "Bidhya Mandir Birgunj",
+    "Birta Mai Mandir Birgunj",
     "Bridal jewelry Nepal",
     "24K Gold necklace Nepal",
     "Gold rate Birgunj",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Birta Mai Jewellers | Luxury Jewelry in Birgunj, Nepal",
     description:
-      "Handcrafted 24K and 22K gold, certified diamonds, and sterling silver heirlooms in Bidhya Mandir, Birgunj. WhatsApp Concierge +977 9845033095.",
+      "Handcrafted 24K and 22K gold, certified diamonds, and sterling silver heirlooms in Birta Mai Mandir, Birgunj. WhatsApp Concierge +977 9845033095.",
     url: "https://birtamaijewellers.com",
     siteName: "Birta Mai Jewellers",
     images: [
@@ -82,7 +82,7 @@ export default async function RootLayout({
     "telephone": "+9779845033095",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Bidhya Mandir",
+      "streetAddress": "Birta Mai Mandir",
       "addressLocality": "Birgunj",
       "addressRegion": "Madhesh Province",
       "addressCountry": "NP",

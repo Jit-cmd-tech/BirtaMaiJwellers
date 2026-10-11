@@ -16,7 +16,7 @@ export interface WhatsAppProductInquiryParams {
 }
 
 export function getGeneralWhatsAppUrl(
-  message = "Hello Birta Mai Jewellers, I would like to enquire about your jewelry collection and visit your store at Bidhya Mandir, Birgunj."
+  message = "Hello Birta Mai Jewellers, I would like to enquire about your jewelry collection and visit your store at Birta Mai Mandir, Birgunj."
 ): string {
   return `https://wa.me/${OFFICIAL_WHATSAPP_NUMBER}?text=${encodeURIComponent(message.trim())}`;
 }
@@ -39,7 +39,7 @@ export function getAppointmentWhatsAppUrl(params: {
   inquiryType: string;
   message?: string;
 }): string {
-  const text = `Hello Birta Mai Jewellers, I would like to schedule an in-store appointment at Bidhya Mandir, Birgunj.
+  const text = `Hello Birta Mai Jewellers, I would like to schedule an in-store appointment at Birta Mai Mandir, Birgunj.
 Name: ${params.fullName}
 Inquiry Type: ${params.inquiryType}${params.preferredDate ? `\nPreferred Date: ${params.preferredDate}` : ""}${
     params.message ? `\nNotes: ${params.message}` : ""

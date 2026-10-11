@@ -5,7 +5,7 @@ import { getGeneralWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function HeroSection() {
   const whatsappUrl = getGeneralWhatsAppUrl(
-    "Hello Birta Mai Jewellers, I would like to enquire about your jewelry collection and visit your store at Bidhya Mandir, Birgunj."
+    "Hello Birta Mai Jewellers, I would like to enquire about your jewelry collection and visit your store at Birta Mai Mandir, Birgunj."
   );
 
   return (
@@ -32,7 +32,7 @@ export default function HeroSection() {
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0D2A24]/90 border border-[#C6A66B]/60 rounded-xs backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C6A66B]" />
             <span className="text-[11px] sm:text-xs tracking-[0.25em] uppercase text-[#C6A66B] font-medium">
-              Bidhya Mandir • Birgunj, Nepal
+              Birta Mai Mandir • Birgunj, Nepal
             </span>
           </div>
 

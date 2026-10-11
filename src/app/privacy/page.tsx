@@ -15,7 +15,7 @@ export default function PrivacyPage() {
 
         <div className="space-y-4 text-sm text-[#77736B] leading-relaxed">
           <p>
-            At <strong>Birta Mai Jewellers</strong> (Bidhya Mandir, Birgunj, Nepal), we deeply respect your personal privacy. This policy explains how we treat details shared with us when you explore our website or contact us via WhatsApp and phone.
+            At <strong>Birta Mai Jewellers</strong> (Birta Mai Mandir, Birgunj, Nepal), we deeply respect your personal privacy. This policy explains how we treat details shared with us when you explore our website or contact us via WhatsApp and phone.
           </p>
 
           <h2 className="font-serif text-xl text-[#171717] pt-4">1. Information We Collect</h2>
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
 
           <h2 className="font-serif text-xl text-[#171717] pt-4">2. Use of Information</h2>
           <p>
-            We use your contact details exclusively to respond to your inquiries, schedule atelier appointments at Bidhya Mandir, and share confirmed bullion rates and order updates. We do not sell, rent, or distribute your personal information to third parties.
+            We use your contact details exclusively to respond to your inquiries, schedule atelier appointments at Birta Mai Mandir, and share confirmed bullion rates and order updates. We do not sell, rent, or distribute your personal information to third parties.
           </p>
 
           <h2 className="font-serif text-xl text-[#171717] pt-4">3. WhatsApp Communications</h2>
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
 
           <h2 className="font-serif text-xl text-[#171717] pt-4">4. Contacting Us</h2>
           <p>
-            If you have questions regarding your data, please contact us directly at our store in Bidhya Mandir, Birgunj, Nepal or via phone/WhatsApp at +977 9845033095.
+            If you have questions regarding your data, please contact us directly at our store in Birta Mai Mandir, Birgunj, Nepal or via phone/WhatsApp at +977 9845033095.
           </p>
         </div>
       </div>

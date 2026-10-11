@@ -15,7 +15,7 @@ export default function TermsPage() {
 
         <div className="space-y-4 text-sm text-[#77736B] leading-relaxed">
           <p>
-            Welcome to the digital catalog of <strong>Birta Mai Jewellers</strong>, situated at Bidhya Mandir, Birgunj, Nepal. By accessing this website, you accept the following terms.
+            Welcome to the digital catalog of <strong>Birta Mai Jewellers</strong>, situated at Birta Mai Mandir, Birgunj, Nepal. By accessing this website, you accept the following terms.
           </p>
 
           <h2 className="font-serif text-xl text-[#171717] pt-4">1. Precious Metal Rates & Pricing</h2>
@@ -35,7 +35,7 @@ export default function TermsPage() {
 
           <h2 className="font-serif text-xl text-[#171717] pt-4">4. In-Store Inspection</h2>
           <p>
-            We encourage all prospective buyers to visit our showroom at Bidhya Mandir, Birgunj to physically inspect jewelry items, verify purity hallmarks, and ensure perfect sizing.
+            We encourage all prospective buyers to visit our showroom at Birta Mai Mandir, Birgunj to physically inspect jewelry items, verify purity hallmarks, and ensure perfect sizing.
           </p>
         </div>
       </div>

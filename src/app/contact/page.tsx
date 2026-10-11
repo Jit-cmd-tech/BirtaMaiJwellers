@@ -13,7 +13,7 @@ import { getGeneralWhatsAppUrl, DISPLAY_PHONE_NUMBER } from "@/lib/whatsapp";
 export const metadata = {
   title: "Contact & Visit Us | Birta Mai Jewellers, Birgunj",
   description:
-    "Visit Birta Mai Jewellers at Bidhya Mandir, Birgunj, Nepal. Book bridal consultations, custom jewelry appointments, or reach out on WhatsApp at +977 9845033095.",
+    "Visit Birta Mai Jewellers at Birta Mai Mandir, Birgunj, Nepal. Book bridal consultations, custom jewelry appointments, or reach out on WhatsApp at +977 9845033095.",
 };
 
 export default async function ContactPage() {
@@ -26,7 +26,7 @@ export default async function ContactPage() {
         {/* Editorial Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-[#C6A66B] text-xs uppercase tracking-[0.25em] font-semibold">
-            Bidhya Mandir • Birgunj
+            Birta Mai Mandir • Birgunj
           </span>
           <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#252823] font-normal mt-2 leading-tight">
             Visit Our Showroom & Atelier
