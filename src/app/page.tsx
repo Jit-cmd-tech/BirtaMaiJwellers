@@ -11,12 +11,20 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import SocialShowcase from "@/components/SocialShowcase";
 import { getPublishedProducts, getRates, getSettings } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const products = await getPublishedProducts();
   const rates = await getRates();
   const settings = await getSettings();
 
-  const featuredProducts = products.filter((p) => p.featured).slice(0, 6);
+  const featured = products.filter((p) => p.featured);
+  const newArrivals = products.filter((p) => p.isNewArrival);
+  const priority = [...newArrivals, ...featured];
+  const priorityIds = new Set(priority.map((p) => p.id));
+  const remaining = products.filter((p) => !priorityIds.has(p.id));
+  const featuredProducts = Array.from(new Set([...priority, ...remaining])).slice(0, 6);
 
   return (
     <div className="bg-[#F8F5EE]">

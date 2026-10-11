@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isSessionValid } from "@/lib/auth";
 import { getAllProducts, saveProduct } from "@/lib/db";
 
@@ -53,6 +54,17 @@ export async function POST(req: Request) {
       isDemo: Boolean(data.isDemo),
       images: Array.isArray(data.images) && data.images.length > 0 ? data.images : ["/images/hero_bridal.jpg"],
     });
+
+    // Revalidate public catalog and product pages
+    try {
+      revalidatePath("/");
+      revalidatePath("/collections");
+      if (saved.slug) {
+        revalidatePath(`/products/${saved.slug}`);
+      }
+    } catch (revalErr) {
+      console.warn("Revalidation notice:", revalErr);
+    }
 
     return NextResponse.json({ success: true, product: saved });
   } catch (error) {

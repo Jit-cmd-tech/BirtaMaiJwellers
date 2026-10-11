@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isSessionValid } from "@/lib/auth";
 import { deleteProduct, getProductById } from "@/lib/db";
 
@@ -28,9 +29,20 @@ export async function DELETE(req: Request, { params }: RouteParams) {
   }
 
   const { id } = await params;
+  const product = await getProductById(id);
   const success = await deleteProduct(id);
   if (!success) {
     return NextResponse.json({ error: "Product not found or delete failed" }, { status: 404 });
+  }
+
+  try {
+    revalidatePath("/");
+    revalidatePath("/collections");
+    if (product?.slug) {
+      revalidatePath(`/products/${product.slug}`);
+    }
+  } catch (revalErr) {
+    console.warn("Revalidation notice:", revalErr);
   }
 
   return NextResponse.json({ success: true, message: "Product deleted successfully." });
