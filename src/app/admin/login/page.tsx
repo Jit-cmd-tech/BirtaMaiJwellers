@@ -87,13 +87,6 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
-            <div className="text-[11px] text-[#F8F5EE]/70 space-y-1">
-              <div>Default local password for setup:</div>
-              <code className="text-[#C6A66B] font-mono bg-[#0D2A24] px-1.5 py-0.5 rounded-xs">
-                BirtaMaiAdmin@2026
-              </code>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
