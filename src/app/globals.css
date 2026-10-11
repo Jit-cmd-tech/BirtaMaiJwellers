@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* New Luxury Color System */
+  --emerald-primary: #123B32;
+  --emerald-dark: #0D2A24;
+  --emerald-light: #1A4E42;
+  --champagne-gold: #C6A66B;
+  --champagne-gold-hover: #B59458;
+  --champagne-gold-light: #F1E9DA;
+  --warm-ivory: #F8F5EE;
+  --warm-ivory-alt: #F2ECE1;
+  --pure-white: #FFFFFF;
+  --soft-charcoal: #252823;
+  --soft-charcoal-light: #3D423A;
+  --text-secondary: #6A7066;
+  --muted-sage: #DCE5DC;
+  --champagne-border: #E4DBD0;
+}
+
+body {
+  background-color: var(--warm-ivory);
+  color: var(--soft-charcoal);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Luxury Serif Headlines */
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* Champagne Gold Shimmer and Accents */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #DFCA9B 0%, #C6A66B 50%, #A9874B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.champagne-gold-bg {
+  background-color: var(--champagne-gold);
+}
+
+.emerald-bg {
+  background-color: var(--emerald-primary);
+}
+
+/* Reduced Motion Respect */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #123B32;
+}
+::-webkit-scrollbar-thumb {
+  background: #C6A66B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #dfca9b;
+}
