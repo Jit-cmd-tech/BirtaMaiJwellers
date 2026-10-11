@@ -198,6 +198,18 @@ export default function AdminDashboardClient({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      showError("Please select a valid image file (JPEG, PNG, WebP, GIF, SVG).");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showError("Image file size must be under 10MB.");
+      e.target.value = "";
+      return;
+    }
+
     setUploadingImage(true);
     const fd = new FormData();
     fd.append("file", file);
@@ -217,10 +229,11 @@ export default function AdminDashboardClient({
         images: [...currentImages, data.url],
       });
       showToast("Image uploaded successfully.");
-    } catch {
-      showError("Image upload failed.");
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : "Image upload failed.");
     } finally {
       setUploadingImage(false);
+      e.target.value = "";
     }
   };
 
@@ -1268,14 +1281,14 @@ export default function AdminDashboardClient({
                     </div>
                   ))}
 
-                  <label className="w-16 h-16 border border-dashed border-[#1A4E42] hover:border-[#C6A66B] flex flex-col items-center justify-center cursor-pointer rounded-xs text-[#F8F5EE]/70 hover:text-[#F8F5EE]">
-                    <Upload className="w-4 h-4 mb-1 text-[#C6A66B]" />
-                    <span className="text-[9px] uppercase">
+                  <label className={`w-16 h-16 border border-dashed border-[#1A4E42] hover:border-[#C6A66B] flex flex-col items-center justify-center cursor-pointer rounded-xs text-[#F8F5EE]/70 hover:text-[#F8F5EE] transition-colors ${uploadingImage ? "opacity-50 cursor-not-allowed" : ""}`}>
+                    <Upload className={`w-4 h-4 mb-1 text-[#C6A66B] ${uploadingImage ? "animate-pulse" : ""}`} />
+                    <span className="text-[9px] uppercase font-semibold">
                       {uploadingImage ? "..." : "Upload"}
                     </span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
                       onChange={handleImageUpload}
                       className="hidden"
                       disabled={uploadingImage}

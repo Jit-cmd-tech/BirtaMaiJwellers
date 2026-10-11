@@ -303,9 +303,20 @@ export async function saveProduct(
 ): Promise<Product> {
   const now = new Date().toISOString();
   const id = productData.id || `prod-${Date.now()}`;
+  const slug =
+    productData.slug ||
+    productData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") ||
+    `product-${Date.now()}`;
+  const sku = productData.sku || `BMJ-${Date.now().toString().slice(-6)}`;
+
   const fullProduct: Product = {
     ...productData,
     id,
+    slug,
+    sku,
     createdAt: now,
     updatedAt: now,
   };
