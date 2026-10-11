@@ -11,10 +11,10 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import SocialShowcase from "@/components/SocialShowcase";
 import { getPublishedProducts, getRates, getSettings } from "@/lib/db";
 
-export default function HomePage() {
-  const products = getPublishedProducts();
-  const rates = getRates();
-  const settings = getSettings();
+export default async function HomePage() {
+  const products = await getPublishedProducts();
+  const rates = await getRates();
+  const settings = await getSettings();
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 6);
 

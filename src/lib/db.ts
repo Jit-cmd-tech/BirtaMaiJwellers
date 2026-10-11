@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
+import { supabase, getSupabaseAdminClient } from "./supabase";
 
 export interface Product {
   id: string;
@@ -86,448 +87,564 @@ export interface DatabaseSchema {
 const DATA_DIR = path.join(process.cwd(), "data");
 const DB_FILE = path.join(DATA_DIR, "store.json");
 
-const INITIAL_SETTINGS: BusinessSettings = {
-  storeName: "Birta Mai Jewellers",
-  tagline: "Timeless Elegance • A Legacy of Beauty",
-  address: "Bidhya Mandir, Birgunj, Nepal",
-  locationArea: "Bidhya Mandir",
-  city: "Birgunj",
-  country: "Nepal",
-  whatsappNumber: "9779845033095",
-  phoneDisplay: "+977 9845033095",
-  openingHours: "Sunday – Friday: 10:00 AM – 7:30 PM (Saturday on appointment)",
-  announcementText: "Festive & Bridal Showcase • Visit our Atelier at Bidhya Mandir, Birgunj or Enquire via WhatsApp",
-  announcementActive: true,
-  brandStory:
-    "Birta Mai Jewellers brings the pinnacle of precious metal artistry and timeless craftsmanship to Birgunj, Nepal. Rooted at Bidhya Mandir, we curate and handcraft certified 24K and 22K gold heirlooms, diamond solitaires, and antique silver artifacts to mark life's most cherished milestones.",
-  googleMapsUrl: "https://www.google.com/maps?q=27.0058105,84.8728762",
-  facebookUrl: "",
-  instagramUrl: "",
-};
+// Helpers to map between DB (snake_case) and App (camelCase)
+function mapProductFromDb(row: any): Product {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    sku: row.sku,
+    description: row.description || "",
+    category: row.category,
+    material: row.material || "Gold",
+    purity: row.purity || null,
+    approximateWeight: row.approximate_weight || null,
+    stoneType: row.stone_type || null,
+    dimensions: row.dimensions || null,
+    craftsmanship: row.craftsmanship || null,
+    collection: row.collection || "Traditional",
+    price: row.price !== null && row.price !== undefined ? Number(row.price) : null,
+    currency: row.currency || "NPR",
+    showPrice: Boolean(row.show_price),
+    stockStatus: (row.stock_status || "Available") as Product["stockStatus"],
+    featured: Boolean(row.featured),
+    isNewArrival: Boolean(row.is_new_arrival),
+    published: Boolean(row.published),
+    isDemo: Boolean(row.is_demo),
+    images: Array.isArray(row.images) ? row.images : [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
 
-const INITIAL_RATES: MetalRates = {
-  goldFinePerTola: 161200,
-  goldFinePer10g: 138200,
-  silverPerTola: 1980,
-  silverPer10g: 1697,
-  lastUpdated: new Date().toISOString(),
-  sourceAttribution: "Federation of Nepal Gold & Silver Dealers' Association (FENEGOSIDA) / Admin Managed",
-  isAvailable: true,
-};
+function mapProductToDb(p: Partial<Product> & { id: string }) {
+  const row: Record<string, any> = {
+    id: p.id,
+  };
+  if (p.name !== undefined) row.name = p.name;
+  if (p.slug !== undefined) row.slug = p.slug;
+  if (p.sku !== undefined) row.sku = p.sku;
+  if (p.description !== undefined) row.description = p.description;
+  if (p.category !== undefined) row.category = p.category;
+  if (p.material !== undefined) row.material = p.material;
+  if (p.purity !== undefined) row.purity = p.purity;
+  if (p.approximateWeight !== undefined) row.approximate_weight = p.approximateWeight;
+  if (p.stoneType !== undefined) row.stone_type = p.stoneType;
+  if (p.dimensions !== undefined) row.dimensions = p.dimensions;
+  if (p.craftsmanship !== undefined) row.craftsmanship = p.craftsmanship;
+  if (p.collection !== undefined) row.collection = p.collection;
+  if (p.price !== undefined) row.price = p.price;
+  if (p.currency !== undefined) row.currency = p.currency;
+  if (p.showPrice !== undefined) row.show_price = p.showPrice;
+  if (p.stockStatus !== undefined) row.stock_status = p.stockStatus;
+  if (p.featured !== undefined) row.featured = p.featured;
+  if (p.isNewArrival !== undefined) row.is_new_arrival = p.isNewArrival;
+  if (p.published !== undefined) row.published = p.published;
+  if (p.isDemo !== undefined) row.is_demo = p.isDemo;
+  if (p.images !== undefined) row.images = p.images;
+  if (p.createdAt !== undefined) row.created_at = p.createdAt;
+  if (p.updatedAt !== undefined) row.updated_at = p.updatedAt;
+  return row;
+}
 
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: "prod-1",
-    name: "Royal Heritage Bridal Choker Set",
-    slug: "royal-heritage-bridal-choker-set",
-    sku: "BMJ-BR-0101",
-    description:
-      "A magnificent handcrafted 22K gold bridal choker adorned with lustrous Basra seed pearls, emerald motifs, and intricate Nakashi filigree. Comes with matching royal jhumkas and maang tikka.",
-    category: "Bridal Jewelry",
-    material: "Gold",
-    purity: "22K (916 Hallmarked)",
-    approximateWeight: "78.50 g (approx.)",
-    stoneType: "Uncut Polki & Natural Green Emeralds",
-    dimensions: "Adjustable dori choker length",
-    craftsmanship: "Authentic Handcrafted Filigree & Kundan Setting",
-    collection: "Bridal",
-    price: 980000,
-    currency: "NPR",
-    showPrice: true,
-    stockStatus: "Available",
-    featured: true,
-    isNewArrival: true,
-    published: true,
-    isDemo: true,
-    images: ["/images/hero_bridal.jpg", "/images/cat_bridal.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-2",
-    name: "Imperial Kundan & Pearl Gold Choker",
-    slug: "imperial-kundan-pearl-gold-choker",
-    sku: "BMJ-BR-0102",
-    description:
-      "Sculpted with regal precision, this 22K yellow gold choker displays brilliant uncut stones nestled against delicate pearl fringe. Designed for the modern discerning bride.",
-    category: "Bridal Jewelry",
-    material: "Gold",
-    purity: "22K (916)",
-    approximateWeight: "62.20 g (approx.)",
-    stoneType: "Fine Uncut Stones & Basra Pearls",
-    dimensions: "16-inch adjustable collar",
-    craftsmanship: "Artisan Meenakari back with handcrafted bezel",
-    collection: "Bridal",
-    price: 765000,
-    currency: "NPR",
-    showPrice: true,
-    stockStatus: "Available",
-    featured: true,
-    isNewArrival: false,
-    published: true,
-    isDemo: true,
-    images: ["/images/cat_bridal.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-3",
-    name: "Handcrafted Peacock Royal Gold Kadas",
-    slug: "handcrafted-peacock-royal-gold-kadas",
-    sku: "BMJ-BG-0201",
-    description:
-      "A peerless pair of 22K gold hinged bangles (kadas) engraved with auspicious peacock feather filigree, mirror polish, and high-relief repoussé detailing.",
-    category: "Bangles & Bracelets",
-    material: "Gold",
-    purity: "22K (916)",
-    approximateWeight: "46.80 g (pair approx.)",
-    stoneType: "Micro-pavé synthetic accents",
-    dimensions: "Size 2.6 (Custom sizes on request)",
-    craftsmanship: "Traditional Birgunj Goldsmith Hand Repoussé",
-    collection: "Traditional",
-    price: 580000,
-    currency: "NPR",
-    showPrice: true,
-    stockStatus: "Available",
-    featured: true,
-    isNewArrival: true,
-    published: true,
-    isDemo: true,
-    images: ["/images/cat_bangles.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-4",
-    name: "Eternal Solitaire & Vintage Engraved Gold Band",
-    slug: "eternal-solitaire-vintage-engraved-gold-band",
-    sku: "BMJ-RG-0301",
-    description:
-      "A breathtaking combination of an ornate 24K yellow gold vintage engraved band paired with a brilliant-cut solitaire diamond setting. Exemplifies eternal commitment.",
-    category: "Rings",
-    material: "Diamond",
-    purity: "18K Gold / VVS1 Diamond",
-    approximateWeight: "8.40 g (approx.)",
-    stoneType: "1.20 ct Round Brilliant Cut Diamond (G Color, VVS1)",
-    dimensions: "US Size 7 (Resizing available)",
-    craftsmanship: "Micro-engraved milgrain scrollwork",
-    collection: "Contemporary",
-    price: null,
-    currency: "NPR",
-    showPrice: false,
-    stockStatus: "Made to Order",
-    featured: true,
-    isNewArrival: false,
-    published: true,
-    isDemo: true,
-    images: ["/images/cat_rings.jpg", "/images/ring_detail.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-5",
-    name: "Grand Heirloom Gold Jhumkas with Pearl Droplets",
-    slug: "grand-heirloom-gold-jhumkas-pearl-droplets",
-    sku: "BMJ-ER-0401",
-    description:
-      "Two-tier cascading 22K gold bridal jhumka earrings featuring floral studs, ruby cabochon centers, fine filigree bells, and graduated Basra pearl tassels.",
-    category: "Earrings",
-    material: "Gold",
-    purity: "22K (916)",
-    approximateWeight: "32.10 g (approx.)",
-    stoneType: "Natural Rubies & Basra Seed Pearls",
-    dimensions: "7.5 cm drop length",
-    craftsmanship: "Master filigree wirework and threaded post closure",
-    collection: "Bridal",
-    price: 395000,
-    currency: "NPR",
-    showPrice: true,
-    stockStatus: "Available",
-    featured: true,
-    isNewArrival: true,
-    published: true,
-    isDemo: true,
-    images: ["/images/cat_earrings.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-6",
-    name: "Antique Embossed Nepalese Silver Kalash & Ritual Set",
-    slug: "antique-embossed-nepalese-silver-kalash",
-    sku: "BMJ-SV-0501",
-    description:
-      "Hand-chiseled 925 sterling silver auspicious Kalash urn and ceremonial puja accessories featuring sacred Om and floral repoussé patterns. Ideal for weddings and home sanctums.",
-    category: "Silver Jewelry & Artifacts",
-    material: "Silver",
-    purity: "92.5% Sterling Silver",
-    approximateWeight: "480.00 g (approx.)",
-    stoneType: "None",
-    dimensions: "Height: 22 cm, Diameter: 14 cm",
-    craftsmanship: "Traditional Nepalese Hand Chiseling & Oxidation Polish",
-    collection: "Traditional",
-    price: 95000,
-    currency: "NPR",
-    showPrice: true,
-    stockStatus: "Available",
-    featured: true,
-    isNewArrival: false,
-    published: true,
-    isDemo: true,
-    images: ["/images/cat_silver.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-7",
-    name: "Classic 24K Pure Gold Floral Pendant Chain",
-    slug: "classic-24k-pure-gold-floral-pendant-chain",
-    sku: "BMJ-NK-0601",
-    description:
-      "Radiant 24K pure gold necklace featuring fine link geometry and a delicate blooming floral pendant, crafted to grace daily occasions and festive celebrations.",
-    category: "Gold Necklaces",
-    material: "Gold",
-    purity: "24K (999 Pure)",
-    approximateWeight: "22.50 g (approx.)",
-    stoneType: "Pure Gold Only",
-    dimensions: "18-inch chain with 2-inch extension",
-    craftsmanship: "High-precision Italian link weaving with Nepalese pendant casting",
-    collection: "Daily Wear",
-    price: 310000,
-    currency: "NPR",
-    showPrice: true,
-    stockStatus: "Available",
-    featured: false,
-    isNewArrival: true,
-    published: true,
-    isDemo: true,
-    images: ["/images/cat_necklace.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "prod-8",
-    name: "Bespoke Royal Vivaha Bridal Rani Haar",
-    slug: "bespoke-royal-vivaha-bridal-rani-haar",
-    sku: "BMJ-BR-0103",
-    description:
-      "An opulent multi-layer royal gold Rani Haar with intricate peacock medallions and emerald drops. Crafted upon custom order for grand bridal weddings.",
-    category: "Bridal Jewelry",
-    material: "Gold",
-    purity: "22K (916)",
-    approximateWeight: "115.00 g (approx.)",
-    stoneType: "Natural Emeralds & Kundan",
-    dimensions: "26-inch majestic drop",
-    craftsmanship: "Bespoke Royal Master Goldsmith Craftsmanship",
-    collection: "Bridal",
-    price: null,
-    currency: "NPR",
-    showPrice: false,
-    stockStatus: "Made to Order",
-    featured: true,
-    isNewArrival: false,
-    published: true,
-    isDemo: true,
-    images: ["/images/bridal_editorial.jpg", "/images/hero_bridal.jpg"],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+function mapSettingsFromDb(row: any): BusinessSettings {
+  return {
+    storeName: row.store_name,
+    tagline: row.tagline,
+    address: row.address,
+    locationArea: row.location_area,
+    city: row.city,
+    country: row.country,
+    whatsappNumber: row.whatsapp_number,
+    phoneDisplay: row.phone_display,
+    openingHours: row.opening_hours,
+    announcementText: row.announcement_text,
+    announcementActive: Boolean(row.announcement_active),
+    brandStory: row.brand_story,
+    googleMapsUrl: row.google_maps_url,
+    facebookUrl: row.facebook_url || "",
+    instagramUrl: row.instagram_url || "",
+  };
+}
 
-function initDatabase(): DatabaseSchema {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
+function mapRatesFromDb(row: any): MetalRates {
+  return {
+    goldFinePerTola: Number(row.gold_fine_per_tola),
+    goldFinePer10g: Number(row.gold_fine_per_10g),
+    silverPerTola: Number(row.silver_per_tola),
+    silverPer10g: Number(row.silver_per_10g),
+    lastUpdated: row.last_updated,
+    sourceAttribution: row.source_attribution,
+    isAvailable: Boolean(row.is_available),
+  };
+}
 
-  if (!fs.existsSync(DB_FILE)) {
-    // Default admin: username: "admin", password: "BirtaMaiAdmin@2026"
-    const salt = bcrypt.genSaltSync(10);
-    const passwordHash = bcrypt.hashSync("BirtaMaiAdmin@2026", salt);
+function mapInquiryFromDb(row: any): CustomerInquiry {
+  return {
+    id: row.id,
+    fullName: row.full_name,
+    phoneOrWhatsapp: row.phone_or_whatsapp,
+    inquiryType: row.inquiry_type,
+    preferredDate: row.preferred_date || undefined,
+    productInterest: row.product_interest || undefined,
+    message: row.message,
+    status: row.status as CustomerInquiry["status"],
+    createdAt: row.created_at,
+  };
+}
 
-    const initialDb: DatabaseSchema = {
-      products: INITIAL_PRODUCTS,
-      settings: INITIAL_SETTINGS,
-      rates: INITIAL_RATES,
-      inquiries: [],
-      admin: {
-        id: "admin-1",
-        username: "admin",
-        passwordHash,
-      },
-    };
-
-    fs.writeFileSync(DB_FILE, JSON.stringify(initialDb, null, 2), "utf8");
-    return initialDb;
-  }
-
+// Local cache / fallback reader
+function getLocalFallback(): DatabaseSchema | null {
   try {
-    const raw = fs.readFileSync(DB_FILE, "utf8");
-    const data = JSON.parse(raw);
-    return data;
-  } catch (error) {
-    console.error("Error reading database file, reinitializing...", error);
-    const salt = bcrypt.genSaltSync(10);
-    const passwordHash = bcrypt.hashSync("BirtaMaiAdmin@2026", salt);
-    const fallbackDb: DatabaseSchema = {
-      products: INITIAL_PRODUCTS,
-      settings: INITIAL_SETTINGS,
-      rates: INITIAL_RATES,
-      inquiries: [],
-      admin: {
-        id: "admin-1",
-        username: "admin",
-        passwordHash,
-      },
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(fallbackDb, null, 2), "utf8");
-    return fallbackDb;
-  }
-}
-
-function writeDatabase(data: DatabaseSchema): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  const tempFile = `${DB_FILE}.tmp`;
-  fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), "utf8");
-  fs.renameSync(tempFile, DB_FILE);
-}
-
-// Data access operations
-export function getDatabase(): DatabaseSchema {
-  return initDatabase();
-}
-
-export function getAllProducts(): Product[] {
-  const db = getDatabase();
-  return db.products;
-}
-
-export function getPublishedProducts(): Product[] {
-  const db = getDatabase();
-  return db.products.filter((p) => p.published);
-}
-
-export function getProductBySlug(slug: string): Product | undefined {
-  const db = getDatabase();
-  return db.products.find((p) => p.slug === slug);
-}
-
-export function getProductById(id: string): Product | undefined {
-  const db = getDatabase();
-  return db.products.find((p) => p.id === id);
-}
-
-export function saveProduct(productData: Omit<Product, "id" | "createdAt" | "updatedAt"> & { id?: string }): Product {
-  const db = getDatabase();
-  const now = new Date().toISOString();
-
-  if (productData.id) {
-    const index = db.products.findIndex((p) => p.id === productData.id);
-    if (index !== -1) {
-      const updated: Product = {
-        ...db.products[index],
-        ...productData,
-        id: productData.id,
-        updatedAt: now,
-      };
-      db.products[index] = updated;
-      writeDatabase(db);
-      return updated;
+    if (fs.existsSync(DB_FILE)) {
+      return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
     }
+  } catch (err) {
+    console.error("Local fallback read error:", err);
+  }
+  return null;
+}
+
+function updateLocalMirror(modifier: (data: DatabaseSchema) => void): void {
+  try {
+    const data = getLocalFallback();
+    if (data) {
+      modifier(data);
+      fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), "utf8");
+    }
+  } catch (err) {
+    console.error("Local mirror sync error:", err);
+  }
+}
+
+// ==========================================
+// 1. PRODUCTS OPERATIONS
+// ==========================================
+
+export async function getAllProducts(): Promise<Product[]> {
+  try {
+    const adminClient = getSupabaseAdminClient();
+    const { data, error } = await adminClient
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      return data.map(mapProductFromDb);
+    }
+  } catch (err) {
+    console.warn("Supabase getAllProducts failed, falling back to local cache:", err);
   }
 
-  const newId = `prod-${Date.now()}`;
-  const newProduct: Product = {
+  const fallback = getLocalFallback();
+  return fallback?.products || [];
+}
+
+export async function getPublishedProducts(): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("published", true)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      return data.map(mapProductFromDb);
+    }
+  } catch (err) {
+    console.warn("Supabase getPublishedProducts failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  return (fallback?.products || []).filter((p) => p.published);
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | undefined> {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (!error && data) {
+      return mapProductFromDb(data);
+    }
+  } catch (err) {
+    console.warn("Supabase getProductBySlug failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  return fallback?.products.find((p) => p.slug === slug);
+}
+
+export async function getProductById(id: string): Promise<Product | undefined> {
+  try {
+    const adminClient = getSupabaseAdminClient();
+    const { data, error } = await adminClient
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (!error && data) {
+      return mapProductFromDb(data);
+    }
+  } catch (err) {
+    console.warn("Supabase getProductById failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  return fallback?.products.find((p) => p.id === id);
+}
+
+export async function saveProduct(
+  productData: Omit<Product, "id" | "createdAt" | "updatedAt"> & { id?: string }
+): Promise<Product> {
+  const now = new Date().toISOString();
+  const id = productData.id || `prod-${Date.now()}`;
+  const fullProduct: Product = {
     ...productData,
-    id: newId,
+    id,
     createdAt: now,
     updatedAt: now,
   };
-  db.products.unshift(newProduct);
-  writeDatabase(db);
-  return newProduct;
-}
 
-export function deleteProduct(id: string): boolean {
-  const db = getDatabase();
-  const beforeCount = db.products.length;
-  db.products = db.products.filter((p) => p.id !== id);
-  if (db.products.length !== beforeCount) {
-    writeDatabase(db);
-    return true;
+  const adminClient = getSupabaseAdminClient();
+  const dbPayload = mapProductToDb(fullProduct);
+
+  const { data, error } = await adminClient
+    .from("products")
+    .upsert(dbPayload, { onConflict: "id" })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase saveProduct error:", error);
+    throw new Error(`Failed to save product in Supabase: ${error.message}`);
   }
-  return false;
+
+  const saved = mapProductFromDb(data);
+
+  // Sync local file mirror
+  updateLocalMirror((db) => {
+    const index = db.products.findIndex((p) => p.id === id);
+    if (index !== -1) {
+      db.products[index] = saved;
+    } else {
+      db.products.unshift(saved);
+    }
+  });
+
+  return saved;
 }
 
-export function getSettings(): BusinessSettings {
-  const db = getDatabase();
-  return db.settings;
+export async function deleteProduct(id: string): Promise<boolean> {
+  const adminClient = getSupabaseAdminClient();
+  const { error } = await adminClient.from("products").delete().eq("id", id);
+
+  if (error) {
+    console.error("Supabase deleteProduct error:", error);
+    return false;
+  }
+
+  // Sync local file mirror
+  updateLocalMirror((db) => {
+    db.products = db.products.filter((p) => p.id !== id);
+  });
+
+  return true;
 }
 
-export function updateSettings(settingsData: Partial<BusinessSettings>): BusinessSettings {
-  const db = getDatabase();
-  db.settings = {
-    ...db.settings,
+// ==========================================
+// 2. BUSINESS SETTINGS OPERATIONS
+// ==========================================
+
+export async function getSettings(): Promise<BusinessSettings> {
+  try {
+    const { data, error } = await supabase
+      .from("business_settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (!error && data) {
+      return mapSettingsFromDb(data);
+    }
+  } catch (err) {
+    console.warn("Supabase getSettings failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  return fallback?.settings || {
+    storeName: "Birta Mai Jewellers",
+    tagline: "Timeless Elegance • A Legacy of Beauty",
+    address: "Birta Mandir, Birgunj, Nepal",
+    locationArea: "Birta Mandir",
+    city: "Birgunj",
+    country: "Nepal",
+    whatsappNumber: "9779845033095",
+    phoneDisplay: "+977 9845033095",
+    openingHours: "Sunday – Friday: 10:00 AM – 7:30 PM (Saturday on appointment)",
+    announcementText: "Festive & Bridal Showcase • Visit our Atelier at Birta Mandir, Birgunj or Enquire via WhatsApp",
+    announcementActive: true,
+    brandStory: "",
+    googleMapsUrl: "https://www.google.com/maps?q=27.0058105,84.8728762",
+    facebookUrl: "",
+    instagramUrl: "",
+  };
+}
+
+export async function updateSettings(settingsData: Partial<BusinessSettings>): Promise<BusinessSettings> {
+  const adminClient = getSupabaseAdminClient();
+  const current = await getSettings();
+  const updated: BusinessSettings = {
+    ...current,
     ...settingsData,
   };
-  writeDatabase(db);
-  return db.settings;
+
+  const payload: Record<string, any> = { id: 1, updated_at: new Date().toISOString() };
+  if (updated.storeName !== undefined) payload.store_name = updated.storeName;
+  if (updated.tagline !== undefined) payload.tagline = updated.tagline;
+  if (updated.address !== undefined) payload.address = updated.address;
+  if (updated.locationArea !== undefined) payload.location_area = updated.locationArea;
+  if (updated.city !== undefined) payload.city = updated.city;
+  if (updated.country !== undefined) payload.country = updated.country;
+  if (updated.whatsappNumber !== undefined) payload.whatsapp_number = updated.whatsappNumber;
+  if (updated.phoneDisplay !== undefined) payload.phone_display = updated.phoneDisplay;
+  if (updated.openingHours !== undefined) payload.opening_hours = updated.openingHours;
+  if (updated.announcementText !== undefined) payload.announcement_text = updated.announcementText;
+  if (updated.announcementActive !== undefined) payload.announcement_active = updated.announcementActive;
+  if (updated.brandStory !== undefined) payload.brand_story = updated.brandStory;
+  if (updated.googleMapsUrl !== undefined) payload.google_maps_url = updated.googleMapsUrl;
+  if (updated.facebookUrl !== undefined) payload.facebook_url = updated.facebookUrl;
+  if (updated.instagramUrl !== undefined) payload.instagram_url = updated.instagramUrl;
+
+  const { data, error } = await adminClient
+    .from("business_settings")
+    .upsert(payload, { onConflict: "id" })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase updateSettings error:", error);
+    throw new Error(`Failed to update settings in Supabase: ${error.message}`);
+  }
+
+  const result = mapSettingsFromDb(data);
+  updateLocalMirror((db) => {
+    db.settings = result;
+  });
+
+  return result;
 }
 
-export function getRates(): MetalRates {
-  const db = getDatabase();
-  return db.rates;
+// ==========================================
+// 3. PRECIOUS METAL RATES OPERATIONS
+// ==========================================
+
+export async function getRates(): Promise<MetalRates> {
+  try {
+    const { data, error } = await supabase
+      .from("metal_rates")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (!error && data) {
+      return mapRatesFromDb(data);
+    }
+  } catch (err) {
+    console.warn("Supabase getRates failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  return fallback?.rates || {
+    goldFinePerTola: 161200,
+    goldFinePer10g: 138200,
+    silverPerTola: 1980,
+    silverPer10g: 1697,
+    lastUpdated: new Date().toISOString(),
+    sourceAttribution: "Federation of Nepal Gold & Silver Dealers' Association (FENEGOSIDA) / Admin Managed",
+    isAvailable: true,
+  };
 }
 
-export function updateRates(ratesData: Partial<MetalRates>): MetalRates {
-  const db = getDatabase();
-  db.rates = {
-    ...db.rates,
+export async function updateRates(ratesData: Partial<MetalRates>): Promise<MetalRates> {
+  const adminClient = getSupabaseAdminClient();
+  const current = await getRates();
+  const updated: MetalRates = {
+    ...current,
     ...ratesData,
     lastUpdated: new Date().toISOString(),
   };
-  writeDatabase(db);
-  return db.rates;
+
+  const payload: Record<string, any> = {
+    id: 1,
+    gold_fine_per_tola: updated.goldFinePerTola,
+    gold_fine_per_10g: updated.goldFinePer10g,
+    silver_per_tola: updated.silverPerTola,
+    silver_per_10g: updated.silverPer10g,
+    source_attribution: updated.sourceAttribution,
+    is_available: updated.isAvailable,
+    last_updated: updated.lastUpdated,
+  };
+
+  const { data, error } = await adminClient
+    .from("metal_rates")
+    .upsert(payload, { onConflict: "id" })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase updateRates error:", error);
+    throw new Error(`Failed to update rates in Supabase: ${error.message}`);
+  }
+
+  const result = mapRatesFromDb(data);
+  updateLocalMirror((db) => {
+    db.rates = result;
+  });
+
+  return result;
 }
 
-export function getInquiries(): CustomerInquiry[] {
-  const db = getDatabase();
-  return db.inquiries || [];
+// ==========================================
+// 4. CUSTOMER INQUIRIES OPERATIONS
+// ==========================================
+
+export async function getInquiries(): Promise<CustomerInquiry[]> {
+  try {
+    const adminClient = getSupabaseAdminClient();
+    const { data, error } = await adminClient
+      .from("customer_inquiries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      return data.map(mapInquiryFromDb);
+    }
+  } catch (err) {
+    console.warn("Supabase getInquiries failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  return fallback?.inquiries || [];
 }
 
-export function saveInquiry(inquiryData: Omit<CustomerInquiry, "id" | "createdAt" | "status">): CustomerInquiry {
-  const db = getDatabase();
+export async function saveInquiry(
+  inquiryData: Omit<CustomerInquiry, "id" | "createdAt" | "status">
+): Promise<CustomerInquiry> {
   const newInquiry: CustomerInquiry = {
     ...inquiryData,
     id: `inq-${Date.now()}`,
     status: "New",
     createdAt: new Date().toISOString(),
   };
-  if (!db.inquiries) db.inquiries = [];
-  db.inquiries.unshift(newInquiry);
-  writeDatabase(db);
-  return newInquiry;
-}
 
-export function updateInquiryStatus(id: string, status: CustomerInquiry["status"]): boolean {
-  const db = getDatabase();
-  const inq = (db.inquiries || []).find((i) => i.id === id);
-  if (inq) {
-    inq.status = status;
-    writeDatabase(db);
-    return true;
+  const payload = {
+    id: newInquiry.id,
+    full_name: newInquiry.fullName,
+    phone_or_whatsapp: newInquiry.phoneOrWhatsapp,
+    inquiry_type: newInquiry.inquiryType,
+    preferred_date: newInquiry.preferredDate || null,
+    product_interest: newInquiry.productInterest || null,
+    message: newInquiry.message,
+    status: newInquiry.status,
+    created_at: newInquiry.createdAt,
+    updated_at: newInquiry.createdAt,
+  };
+
+  // Uses admin client on the server to record inquiry and retrieve created record
+  const adminClient = getSupabaseAdminClient();
+  const { data, error } = await adminClient
+    .from("customer_inquiries")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase saveInquiry error:", error);
+    throw new Error(`Failed to save inquiry in Supabase: ${error.message}`);
   }
-  return false;
+
+  const saved = mapInquiryFromDb(data);
+  updateLocalMirror((db) => {
+    if (!db.inquiries) db.inquiries = [];
+    db.inquiries.unshift(saved);
+  });
+
+  return saved;
 }
 
-export function getAdminUser(): AdminUser {
-  const db = getDatabase();
-  return db.admin;
+export async function updateInquiryStatus(id: string, status: CustomerInquiry["status"]): Promise<boolean> {
+  const adminClient = getSupabaseAdminClient();
+  const { error } = await adminClient
+    .from("customer_inquiries")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Supabase updateInquiryStatus error:", error);
+    return false;
+  }
+
+  updateLocalMirror((db) => {
+    const inq = (db.inquiries || []).find((i) => i.id === id);
+    if (inq) inq.status = status;
+  });
+
+  return true;
 }
 
-export function updateAdminPassword(newPasswordHash: string): void {
-  const db = getDatabase();
-  db.admin.passwordHash = newPasswordHash;
-  writeDatabase(db);
+// ==========================================
+// 5. ADMIN USER OPERATIONS
+// ==========================================
+
+export async function getAdminUser(): Promise<AdminUser> {
+  try {
+    const adminClient = getSupabaseAdminClient();
+    const { data, error } = await adminClient
+      .from("admin_users")
+      .select("*")
+      .eq("username", "admin")
+      .maybeSingle();
+
+    if (!error && data) {
+      return {
+        id: data.id,
+        username: data.username,
+        passwordHash: data.password_hash,
+      };
+    }
+  } catch (err) {
+    console.warn("Supabase getAdminUser failed, falling back to local cache:", err);
+  }
+
+  const fallback = getLocalFallback();
+  if (fallback?.admin) return fallback.admin;
+
+  const salt = bcrypt.genSaltSync(10);
+  return {
+    id: "admin-1",
+    username: "admin",
+    passwordHash: bcrypt.hashSync("BirtaMaiAdmin@2026", salt),
+  };
+}
+
+export async function updateAdminPassword(newPasswordHash: string): Promise<void> {
+  const adminClient = getSupabaseAdminClient();
+  const { error } = await adminClient
+    .from("admin_users")
+    .update({ password_hash: newPasswordHash, updated_at: new Date().toISOString() })
+    .eq("username", "admin");
+
+  if (error) {
+    console.error("Supabase updateAdminPassword error:", error);
+    throw new Error(`Failed to update admin password: ${error.message}`);
+  }
+
+  updateLocalMirror((db) => {
+    if (db.admin) db.admin.passwordHash = newPasswordHash;
+  });
 }

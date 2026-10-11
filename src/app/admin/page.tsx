@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import AdminDashboardClient from "./AdminDashboardClient";
 import { isSessionValid } from "@/lib/auth";
@@ -14,17 +15,25 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  const products = getAllProducts();
-  const settings = getSettings();
-  const rates = getRates();
-  const inquiries = getInquiries();
+  const products = await getAllProducts();
+  const settings = await getSettings();
+  const rates = await getRates();
+  const inquiries = await getInquiries();
 
   return (
-    <AdminDashboardClient
-      initialProducts={products}
-      initialSettings={settings}
-      initialRates={rates}
-      initialInquiries={inquiries}
-    />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#111111] flex items-center justify-center p-8">
+          <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <AdminDashboardClient
+        initialProducts={products}
+        initialSettings={settings}
+        initialRates={rates}
+        initialInquiries={inquiries}
+      />
+    </Suspense>
   );
 }

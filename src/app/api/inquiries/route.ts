@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const saved = saveInquiry({
+    const saved = await saveInquiry({
       fullName: String(body.fullName).trim(),
       phoneOrWhatsapp: String(body.phoneOrWhatsapp).trim(),
       inquiryType: String(body.inquiryType || "General Inquiry"),

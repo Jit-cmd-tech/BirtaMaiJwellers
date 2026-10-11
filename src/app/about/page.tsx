@@ -18,8 +18,8 @@ export const metadata = {
     "Learn about Birta Mai Jewellers, located at Bidhya Mandir, Birgunj. Discover our devotion to transparent bullion pricing, bespoke bridal artistry, and personalized heirloom service.",
 };
 
-export default function AboutPage() {
-  const settings = getSettings();
+export default async function AboutPage() {
+  const settings = await getSettings();
   const whatsappUrl = getGeneralWhatsAppUrl(
     "Hello Birta Mai Jewellers, I would like to know more about your bespoke jewelry crafting services."
   );

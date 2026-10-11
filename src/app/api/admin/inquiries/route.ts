@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const inquiries = getInquiries();
+  const inquiries = await getInquiries();
   return NextResponse.json({ inquiries });
 }
 
@@ -24,7 +24,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "ID and status are required." }, { status: 400 });
     }
 
-    const success = updateInquiryStatus(id, status);
+    const success = await updateInquiryStatus(id, status);
     if (!success) {
       return NextResponse.json({ error: "Inquiry not found." }, { status: 404 });
     }

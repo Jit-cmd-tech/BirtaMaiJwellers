@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }: RouteParams) {
   }
 
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await getProductById(id);
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
@@ -28,7 +28,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
   }
 
   const { id } = await params;
-  const success = deleteProduct(id);
+  const success = await deleteProduct(id);
   if (!success) {
     return NextResponse.json({ error: "Product not found or delete failed" }, { status: 404 });
   }

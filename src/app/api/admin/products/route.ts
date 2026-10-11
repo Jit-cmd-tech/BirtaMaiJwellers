@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const products = getAllProducts();
+  const products = await getAllProducts();
   return NextResponse.json({ products });
 }
 
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     const slug = data.slug || data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const sku = data.sku || `BMJ-${Date.now().toString().slice(-6)}`;
 
-    const saved = saveProduct({
+    const saved = await saveProduct({
       id: data.id,
       name: String(data.name).trim(),
       slug,

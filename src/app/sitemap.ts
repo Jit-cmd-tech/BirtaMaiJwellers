@@ -1,12 +1,12 @@
 import { MetadataRoute } from "next";
-import { getPublishedProducts } from "@/lib/db";
+import { getPublishedProducts, Product } from "@/lib/db";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://birtamaijewellers.com";
 
-  let products: ReturnType<typeof getPublishedProducts> = [];
+  let products: Product[] = [];
   try {
-    products = getPublishedProducts();
+    products = await getPublishedProducts();
   } catch {
     products = [];
   }

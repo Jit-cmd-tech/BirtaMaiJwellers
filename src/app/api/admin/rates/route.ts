@@ -3,7 +3,7 @@ import { isSessionValid } from "@/lib/auth";
 import { getRates, updateRates } from "@/lib/db";
 
 export async function GET() {
-  const rates = getRates();
+  const rates = await getRates();
   return NextResponse.json({ rates });
 }
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid numeric rates entered." }, { status: 400 });
     }
 
-    const updated = updateRates({
+    const updated = await updateRates({
       goldFinePerTola: goldTola,
       goldFinePer10g: gold10g,
       silverPerTola: silverTola,

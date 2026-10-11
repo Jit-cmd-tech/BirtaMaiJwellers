@@ -8,8 +8,8 @@ export const metadata = {
     "Explore 24K and 22K gold necklaces, royal bridal chokers, diamond rings, handcrafted bangles, and authentic silver artifacts at Birta Mai Jewellers in Birgunj, Nepal.",
 };
 
-export default function CollectionsPage() {
-  const products = getPublishedProducts();
+export default async function CollectionsPage() {
+  const products = await getPublishedProducts();
 
   return (
     <Suspense

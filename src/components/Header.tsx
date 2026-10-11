@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { getGeneralWhatsAppUrl } from "@/lib/whatsapp";
 
-export default function Header() {
+function HeaderInner() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,7 +32,7 @@ export default function Header() {
   useEffect(() => {
     setMobileMenuOpen(false);
     setSearchOpen(false);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -216,7 +216,7 @@ export default function Header() {
 
             <div className="pt-4 space-y-3">
               <a
-                href={getGeneralWhatsAppUrl("Hello Birta Mai Jewellers, I would like to schedule a bridal consultation at your Bidhya Mandir store.")}
+                href={getGeneralWhatsAppUrl("Hello Birta Mai Jewellers, I would like to schedule a bridal consultation at your Birta Mandir store.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 text-xs tracking-widest uppercase font-semibold rounded-sm shadow-md"
@@ -225,12 +225,20 @@ export default function Header() {
                 Direct WhatsApp Concierge
               </a>
               <div className="text-center text-[11px] text-[#C6A66B]/80">
-                Bidhya Mandir, Birgunj, Nepal • Tel: +977 9845033095
+                Birta Mandir, Birgunj, Nepal • Tel: +977 9845033095
               </div>
             </div>
           </div>
         )}
       </header>
     </>
+  );
+}
+
+export default function Header() {
+  return (
+    <Suspense fallback={<header className="bg-[#161616] h-20 w-full" />}>
+      <HeaderInner />
+    </Suspense>
   );
 }

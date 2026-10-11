@@ -58,17 +58,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   let settings;
   try {
-    settings = getSettings();
+    settings = await getSettings();
   } catch {
     settings = {
-      announcementText: "Festive & Bridal Showcase • Visit our Atelier at Bidhya Mandir, Birgunj or Enquire via WhatsApp",
+      announcementText: "Festive & Bridal Showcase • Visit our Atelier at Birta Mandir, Birgunj or Enquire via WhatsApp",
       announcementActive: true,
     };
   }

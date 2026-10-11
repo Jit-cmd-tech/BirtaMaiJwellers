@@ -11,7 +11,7 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
@@ -37,13 +37,13 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const allPublished = getPublishedProducts();
+  const allPublished = await getPublishedProducts();
   const relatedProducts = allPublished
     .filter((p) => p.id !== product.id && (p.category === product.category || p.featured))
     .slice(0, 3);

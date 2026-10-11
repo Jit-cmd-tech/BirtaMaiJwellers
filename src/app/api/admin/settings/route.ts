@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const settings = getSettings();
+  const settings = await getSettings();
   return NextResponse.json({ settings });
 }
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid Instagram URL format." }, { status: 400 });
     }
 
-    const updated = updateSettings({
+    const updated = await updateSettings({
       storeName: data.storeName ? String(data.storeName).trim() : undefined,
       address: data.address ? String(data.address).trim() : undefined,
       whatsappNumber: cleanWhatsapp,

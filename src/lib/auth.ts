@@ -8,7 +8,7 @@ const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
 const COOKIE_NAME = "bmj_admin_token";
 
 export async function verifyCredentials(password: string): Promise<boolean> {
-  const admin = getAdminUser();
+  const admin = await getAdminUser();
   return bcrypt.compare(password, admin.passwordHash);
 }
 

@@ -16,8 +16,8 @@ export const metadata = {
     "Visit Birta Mai Jewellers at Bidhya Mandir, Birgunj, Nepal. Book bridal consultations, custom jewelry appointments, or reach out on WhatsApp at +977 9845033095.",
 };
 
-export default function ContactPage() {
-  const settings = getSettings();
+export default async function ContactPage() {
+  const settings = await getSettings();
   const whatsappUrl = getGeneralWhatsAppUrl();
 
   return (
